@@ -20,7 +20,102 @@ security:
       - read
       - write
 paths:
-  /lunchs:
+  /users/me:
+    get:
+      summary: ログインユーザのユーザ情報を取得する
+      description: ログインユーザのユーザ情報を取得する
+      parameters:
+        - name: user
+          in: body
+          type: object
+          schema:
+            properties:
+              name:
+                description: ユーザ名
+                type: string
+              sex:
+                description: 性別
+                type: string
+                enum: [man, woman, other]
+              birth:
+                description: 誕生年月日(yyyy-mm-dd)
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+    put:
+      summary: ログインユーザのユーザ情報を更新する
+      description: ユーザを作成する。作成済みのユーザ情報を返却する
+      parameters:
+        - name: user
+          in: body
+          type: object
+          schema:
+            properties:
+              name:
+                description: ユーザ名
+                type: string
+              sex:
+                description: 性別
+                type: string
+                enum: [man, woman, other]
+              birth:
+                description: 誕生年月日(yyyy-mm-dd)
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+  /users/add:
+    post:
+      summary: ユーザを作成する
+      description: ユーザを作成する。作成済みのユーザ情報を返却する
+      parameters:
+        - name: user
+          in: body
+          type: object
+          schema:
+            properties:
+              name:
+                description: 名前
+                type: string
+              sex:
+                description: 性別
+                type: string
+                enum: [man, woman, other]
+              birth:
+                description: 誕生年月日(yyyy-mm-dd)
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+  /lunchs/{id}:
+    get:
+      summary: ランチの詳細情報を取得する
+      description: ランチの詳細情報を取得する
+      parameters:
+        - name: id
+          in: path
+          description: ランチID
+          type: integer
+          required: true
+          format: int64
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              lunch:
+                $ref: '#/definitions/Lunch'
+              shop:
+                $ref: '#/definitions/Shop'
+  /lunchs/list:
     post:
       summary: ランチの一覧を取得する
       description: リクエストパラメータが複雑になることが見込まれるためGETではなくPOSTとして定義。
@@ -53,31 +148,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Lunch'
-  /lunchs/{id}:
-    get:
-      summary: ランチの詳細情報を取得する
-      description: ランチの詳細情報を取得する
+  /lunchs/add:
+    post:
+      summary: ランチを追加する
+      description: ランチを追加する
       parameters:
-        - name: id
-          in: path
-          description: ランチID
-          type: integer
-          required: true
-          format: int64
+        - name: lunch
+          $ref: '#/definitions/Lunch'
       responses:
         200:
-          description: Successful response
+          description: OK
           schema:
-            title: ArrayOfPersons
-            type: array
-            items:
-              title: Person
-              type: object
-              properties:
-                name:
-                  type: string
-                single:
-                  type: boolean
+            $ref: '#/definitions/Lunch'
   /favorites:
     get:
       summary: ログインユーザのお気に入りランチ一覧を取得する
@@ -150,6 +232,10 @@ definitions:
   Lunch:
     type: "object"
     properties:
+      id:
+        description: ID
+        type: string
+        example: 001
       imageUrl:
         description: ランチ画像のURL
         type: string
@@ -200,7 +286,6 @@ definitions:
             description: 塩分
             type: number
             example: 0.2
-
   User:
     description: ユーザ情報
     properties:
@@ -212,6 +297,15 @@ definitions:
         description: ユーザ名
         type: string
         example: alice
+      sex:
+        description: 性別
+        type: string
+        enum: [man, woman, other]
+        example: woman
+      birth:
+        description: 誕生年月日(yyyy-mm-dd)
+        type: string
+        example: 1992-12-11
   Shop:
     description: 店舗情報の概要
     properties:
