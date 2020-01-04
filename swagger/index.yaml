@@ -25,21 +25,6 @@ paths:
       summary: ログインユーザのユーザ情報を取得する
       description: ログインユーザのユーザ情報を取得する
       parameters:
-        - name: user
-          in: body
-          type: object
-          schema:
-            properties:
-              name:
-                description: ユーザ名
-                type: string
-              sex:
-                description: 性別
-                type: string
-                enum: [man, woman, other]
-              birth:
-                description: 誕生年月日(yyyy-mm-dd)
-                type: string
       responses:
         200:
           description: OK
@@ -53,17 +38,7 @@ paths:
           in: body
           type: object
           schema:
-            properties:
-              name:
-                description: ユーザ名
-                type: string
-              sex:
-                description: 性別
-                type: string
-                enum: [man, woman, other]
-              birth:
-                description: 誕生年月日(yyyy-mm-dd)
-                type: string
+            $ref: '#/definitions/RequestUser'
       responses:
         200:
           description: OK
@@ -76,25 +51,14 @@ paths:
       parameters:
         - name: user
           in: body
-          type: object
           schema:
-            properties:
-              name:
-                description: 名前
-                type: string
-              sex:
-                description: 性別
-                type: string
-                enum: [man, woman, other]
-              birth:
-                description: 誕生年月日(yyyy-mm-dd)
-                type: string
+            $ref: '#/definitions/RequestUser'
       responses:
         200:
           description: OK
           schema:
             $ref: '#/definitions/User'
-  /lunchs/{id}:
+  /lunches/{id}:
     get:
       summary: ランチの詳細情報を取得する
       description: ランチの詳細情報を取得する
@@ -109,52 +73,33 @@ paths:
         200:
           description: Successful response
           schema:
-            type: object
-            properties:
-              lunch:
-                $ref: '#/definitions/Lunch'
-              shop:
-                $ref: '#/definitions/Shop'
-  /lunchs/list:
+            $ref: '#/definitions/Lunch'
+  /lunches/list:
     post:
       summary: ランチの一覧を取得する
       description: リクエストパラメータが複雑になることが見込まれるためGETではなくPOSTとして定義。
       parameters:
         - name: parameter
           in: body
-          type: object
           schema:
-            properties:
-              page:
-                $ref: '#/definitions/SearchProperties'
-              sort:
-                description: レスポンスの表示順を指定。
-                type: array
-                items:
-                  type: string
-                  enum: [value, lipid, random]
-              filter:
-                description: 検索条件を指定
-                type: object
-                properties:
-                  value:
-                    description: 値段の範囲
-                    $ref: '#/definitions/IntegerRange'
-                  lipid:
-                    description: 脂質の範囲
-                    $ref: '#/definitions/IntegerRange'
+            $ref: '#/definitions/LunchListSearchProperties'
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/Lunch'
-  /lunchs/add:
+            type: array
+            items:
+              description: ランチ情報
+              $ref: '#/definitions/Lunch'
+  /lunches/add:
     post:
       summary: ランチを追加する
       description: ランチを追加する
       parameters:
         - name: lunch
-          $ref: '#/definitions/Lunch'
+          in: body
+          schema:
+            $ref: '#/definitions/Lunch'
       responses:
         200:
           description: OK
@@ -164,27 +109,17 @@ paths:
     get:
       summary: ログインユーザのお気に入りランチ一覧を取得する
       parameters:
-        - name: count
-          description: 返却するデータのサイズ。
-          in: query
-          type: number
-          default: 20
-          minimum: 1
-          maximum: 100
-        - name: cursor
-          description: 取得するデータのページ数。
-          in: query
-          type: number
-          default: 1
-          minimum: 1
-          maximum: 100
+        - name: param
+          in: body
+          schema:
+            $ref: '#/definitions/SearchProperties'
       responses:
         200:
           description: お気に入りランチ一覧
           schema:
             type: array
             items:
-              description: お気に入り情報
+              description: お気に入り済情報
               $ref: '#/definitions/Favorite'
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
@@ -209,13 +144,30 @@ definitions:
         minimum: 1
         maximum: 100
         description: 取得するデータのページ数。
+  LunchListSearchProperties:
+    type: object
+    properties:
+      page:
+        $ref: '#/definitions/SearchProperties'
+      sort:
+        description: レスポンスの表示順を指定。
+        type: array
+        items:
+          type: string
+          enum: [value, lipid, random]
+      price:
+        description: 値段の範囲
+        $ref: '#/definitions/IntegerRange'
+      lipid:
+        description: 脂質の範囲
+        $ref: '#/definitions/IntegerRange'
   Lunch:
     type: "object"
     properties:
       id:
         description: ID
-        type: string
-        example: 001
+        type: integer
+        example: 1
       imageUrl:
         description: ランチ画像のURL
         type: string
@@ -226,53 +178,71 @@ definitions:
       shop:
         description: 店舗情報
         $ref: '#/definitions/Shop'
-      value:
+      price:
         description: 値段
         type: integer
         example: 1200
       detail:
         description: ランチの詳細情報。画像解析の結果が格納されている
-        type: object
-        properties:
-          calorie:
-            description: カロリー
-            type: number
-            example: 162
-          carbohydrate:
-            description: 炭水化物
-            type: integer
-            excample: 21.9
-          description:
-            description: ランチの詳細情報
-            type: integer
-            example: 1枚分 メープルシロップバター付
-          fiber:
-            description: 食物繊維
-            type: number
-            example: 0.4
-          label:
-            description: ラベル
-            type: string
-            example: パンケーキ
-          lipid:
-            description: 脂質
-            type: number
-            example: 6.5
-          protein:
-            description: タンパク質
-            type: number
-            example: 3.1
-          salt:
-            description: 塩分
-            type: number
-            example: 0.2
+        $ref: '#/definitions/LunchDetail'
+  LunchDetail:
+    type: object
+    properties:
+      calorie:
+        description: カロリー
+        type: number
+        example: 162
+      carbohydrate:
+        description: 炭水化物
+        type: integer
+        excample: 21.9
+      description:
+        description: ランチの詳細情報
+        type: string
+        example: 1枚分 メープルシロップバター付
+      fiber:
+        description: 食物繊維
+        type: number
+        example: 0.4
+      label:
+        description: ラベル
+        type: string
+        example: パンケーキ
+      lipid:
+        description: 脂質
+        type: number
+        example: 6.5
+      protein:
+        description: タンパク質
+        type: number
+        example: 3.1
+      salt:
+        description: 塩分
+        type: number
+        example: 0.2
+  RequestUser:
+    description: ユーザ情報
+    properties:
+      name:
+        description: ユーザ名
+        type: string
+        example: alice
+      sex:
+        description: 性別
+        type: string
+        enum: [man, woman, other]
+        example: woman
+      birth:
+        description: 誕生年月日(yyyy-mm-dd)
+        type: string
+        example: 1992-12-11
   User:
     description: ユーザ情報
     properties:
       id:
         description: ユーザID
-        type: string
-        example: 001
+        type: integer
+        example: 1
       name:
         description: ユーザ名
         type: string
@@ -291,8 +261,8 @@ definitions:
     properties:
       id:
         description: 店舗ID
-        type: string
-        example: 001
+        type: integer
+        example: 1
       name:
         description: 店舗名
         type: string
@@ -345,11 +315,12 @@ definitions:
     description: お気に入りランチ情報
     type: "object"
     properties:
-      imageUrl:
-        description: ランチ画像のURL
-        type: string
-        example: google.com
+      lunchId:
+        description: ランチID
+        type: integer
+        example: 1001
       date:
         description: お気に入り日時(JST)
         type: string
+        format: 'date-time'
         example: 2019-11-17 12:00:00
