@@ -115,10 +115,20 @@ paths:
     get:
       summary: ログインユーザのお気に入りランチ一覧を取得する
       parameters:
-        - name: param
-          in: body
-          schema:
-            $ref: '#/definitions/SearchProperties'
+        - in: query
+          name: count
+          type: number
+          default: 20
+          minimum: 1
+          maximum: 100
+          description: 返却するデータのサイズ。
+        - in: query
+          name: cursor
+          type: number
+          default: 1
+          minimum: 1
+          maximum: 100
+          description: 取得するデータのページ数。
       responses:
         200:
           description: お気に入りランチ一覧
