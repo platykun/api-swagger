@@ -4,6 +4,12 @@ info:
   title: MARUCH スマホ向けAPI
   description: MARUCH スマホ向けのAPIを提供する
 
+# アドレス設定
+host: maruchi.herokuapp.com
+basePath:
+schemes:
+  - https
+
 
 securityDefinitions:
   application:
@@ -121,12 +127,6 @@ paths:
             items:
               description: お気に入り済情報
               $ref: '#/definitions/Favorite'
-# Added by API Auto Mocking Plugin
-host: virtserver.swaggerhub.com
-basePath: /platykun/maruch_front_api/1.0.0
-schemes:
-  - https
-
 
 definitions:
   SearchProperties:
