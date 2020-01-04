@@ -5,11 +5,14 @@ info:
   description: MARUCH スマホ向けのAPIを提供する
 
 # アドレス設定
+#host: localhost:8080
+#basePath:
+#schemes:
+#  - http
 host: maruchi.herokuapp.com
 basePath:
 schemes:
   - https
-
 
 securityDefinitions:
   application:
@@ -30,7 +33,6 @@ paths:
     get:
       summary: ログインユーザのユーザ情報を取得する
       description: ログインユーザのユーザ情報を取得する
-      parameters:
       responses:
         200:
           description: OK
@@ -145,13 +147,15 @@ definitions:
       count:
         type: number
         default: 20
-        minimum: 1
+        example: 20
+        minimum: 0
         maximum: 100
         description: 返却するデータのサイズ。
       cursor:
         type: number
-        default: 1
-        minimum: 1
+        default: 0
+        example: 0
+        minimum: 0
         maximum: 100
         description: 取得するデータのページ数。
   LunchListSearchProperties:
@@ -316,11 +320,11 @@ definitions:
       min:
         description: 最小値
         type: integer
-        example: 1
+        example: 0
       max:
         description: 最大値
         type: integer
-        example: 1000
+        example: 10000
   Favorite:
     description: お気に入りランチ情報
     type: "object"
